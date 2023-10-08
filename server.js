@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 const DBConnectionString = process.env.DBConnectionString;
 const DBpass = process.env.DBpass;
 
-const port = 3000;
+const port = 443;
 const dataSchema = new mongoose.Schema({
   fullName: String,
   branch: String,
