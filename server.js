@@ -1,9 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("cors"); // Import the cors middleware
+const cors = require("cors");
 require("dotenv").config();
 
 const DBConnectionString = process.env.DBConnectionString;
+const DBpass = process.env.DBpass;
 
 const mongoose = require("mongoose");
 const app = express();
@@ -18,8 +19,12 @@ const dataSchema = new mongoose.Schema({
 });
 
 const data = mongoose.model("data", dataSchema);
+console.log(typeof DBConnectionString);
+console.log(DBConnectionString);
 
-mongoose.connect(DBConnectionString);
+mongoose.connect(
+  `mongodb+srv://edcviit:${DBpass}@cluster0.koohght.mongodb.net/FirstYearOrientation`
+);
 
 app.use(cors());
 
