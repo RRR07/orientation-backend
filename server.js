@@ -6,11 +6,11 @@ const mongoose = require("mongoose");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
-const DBConnectionString = process.env.DBConnectionString;
 const DBpass = process.env.DBpass;
 
-const port = 443;
+const port = 3000;
 const dataSchema = new mongoose.Schema({
   fullName: String,
   branch: String,
@@ -20,15 +20,13 @@ const dataSchema = new mongoose.Schema({
 });
 
 const data = mongoose.model("data", dataSchema);
-console.log(typeof DBConnectionString);
-console.log(DBConnectionString);
 
 mongoose.connect(
   `mongodb+srv://edcviit:${DBpass}@cluster0.koohght.mongodb.net/FirstYearOrientation`
 );
 
 app.get("/", (req, res) => {
-  res.send("Hello world");
+  res.send("Hello World!");
 });
 app.post("/submit", async (req, res) => {
   const { name, branch, email, prn, rollno } = req.body;
