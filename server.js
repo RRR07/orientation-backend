@@ -1,48 +1,52 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("cors");
-require("dotenv").config();
-const mongoose = require("mongoose");
 const app = express();
+const cors = require("cors");
+// const port = 3000;
+
 app.use(cors());
-app.use(bodyParser.json());
 app.use(express.json());
 
-const DBpass = process.env.DBpass;
-
-const port = 3000;
-const dataSchema = new mongoose.Schema({
-  fullName: String,
-  branch: String,
-  email: String,
-  prn: String,
-  rollno: String,
-});
-
-const data = mongoose.model("data", dataSchema);
-
-mongoose.connect(
-  `mongodb+srv://edcviit:${DBpass}@cluster0.koohght.mongodb.net/FirstYearOrientation`
-);
+const accountSid = process.env.accountSid;
+const authToken = process.env.authToken;
+const verifySid = process.env.verifySid;
+const client = require("twilio")(accountSid, authToken);
+const friendlyName = "Global Vistar";
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
-app.post("/submit", async (req, res) => {
-  const { name, branch, email, prn, rollno } = req.body;
 
-  const student = await data.findOne({ email });
-  if (student) {
-    res.status(403).json({ message: "Form already filled by this email" });
-  } else {
-    const newData = new data({ fullname: name, branch, email, prn, rollno });
-    await newData.save();
-    // console.log(newData);
+app.post("/sendOTP", (req, res) => {
+  var { phoneNumber } = req.body;
+  if (phoneNumber == undefined || phoneNumber.length != 10)
+    res.json("Invalid phone Number");
+  phoneNumber = "+91" + phoneNumber;
+  console.log("Sending OTP to ", phoneNumber);
+  client.verify.v2
+    .services(verifySid)
+    .verifications.create({ to: phoneNumber, channel: "sms" })
+    .then((verification) => {
+      console.log(verification);
+      res.json("OTP sent!");
+    });
+});
+app.post("/verifyOTP", (req, res) => {
+  var { phoneNumber, code } = req.body;
+  phoneNumber = "+91" + phoneNumber;
+  // var response = verifyCode(phoneNumber, code);
 
-    res.status(200).send("Registration successful!");
-  }
+  client.verify.v2
+    .services(verifySid)
+    .verificationChecks.create({ to: phoneNumber, code: code })
+    .then((response) => {
+      // Object.assign(response, source);
+      console.log(response);
+
+      res.json(response);
+    });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`App listening on port http://localhost:3000`);
 });
