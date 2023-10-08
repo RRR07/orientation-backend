@@ -2,14 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
+const mongoose = require("mongoose");
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
 
 const DBConnectionString = process.env.DBConnectionString;
 const DBpass = process.env.DBpass;
 
-const mongoose = require("mongoose");
-const app = express();
 const port = 3000;
-
 const dataSchema = new mongoose.Schema({
   fullName: String,
   branch: String,
@@ -26,10 +27,9 @@ mongoose.connect(
   `mongodb+srv://edcviit:${DBpass}@cluster0.koohght.mongodb.net/FirstYearOrientation`
 );
 
-app.use(cors());
-
-app.use(bodyParser.json());
-
+app.get("/", (req, res) => {
+  res.send("Hello world");
+});
 app.post("/submit", async (req, res) => {
   const { name, branch, email, prn, rollno } = req.body;
 
